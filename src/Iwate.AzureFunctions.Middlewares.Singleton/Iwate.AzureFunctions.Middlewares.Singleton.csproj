@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AssemblyName>Iwate.AzureFunctions.Middlewares.Singleton</AssemblyName>
+    <Authors>iwate</Authors>
+    <PackageProjectUrl>https://github.com/iwate/azurefunctions.middlewares.singleton</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/iwate/azurefunctions.middlewares.singleton</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <Description>A singleton lib for dotnet-isolated of Azure Functions</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Azure.Storage.Blobs" Version="12.14.*" />
+    <PackageReference Include="Microsoft.Azure.Functions.Worker.Core" Version="1.8.*" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="7.0.*" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.*" />
+  </ItemGroup>
+
+</Project>
