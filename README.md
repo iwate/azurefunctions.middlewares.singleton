@@ -1,0 +1,1 @@
+# azurefunctions.middlewares.singleton
