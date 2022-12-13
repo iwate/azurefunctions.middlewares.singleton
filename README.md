@@ -1,3 +1,5 @@
+[![NuGet version](https://badge.fury.io/nu/Iwate.AzureFunctions.Middlewares.Singleton.svg)](https://badge.fury.io/nu/Iwate.AzureFunctions.Middlewares.Singleton)
+
 A singleton lib for dotnet-isolated of Azure Functions
 
 # How to Install
