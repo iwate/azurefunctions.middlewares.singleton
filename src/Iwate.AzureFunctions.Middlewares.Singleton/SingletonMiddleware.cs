@@ -16,14 +16,14 @@ public class SingletonMiddleware : IFunctionsWorkerMiddleware
     }
     public async Task Invoke(FunctionContext context, FunctionExecutionDelegate next)
     {
-        var workerAssembly = Assembly.GetExecutingAssembly();
+        var workerAssembly = Assembly.GetEntryAssembly();
 
         var entryPointParts = context.FunctionDefinition.EntryPoint.Split(".");
 
         var workerTypeName = string.Join(".", entryPointParts[..^1]);
         var workerFunctionName = entryPointParts.Last();
 
-        var workerType = workerAssembly.GetType(workerTypeName)!;
+        var workerType = workerAssembly?.GetType(workerTypeName)!;
         var workerFunction = workerType.GetMethod(workerFunctionName)!;
 
         if (workerFunction.GetCustomAttribute<SingletonAttribute>() is SingletonAttribute attr)
