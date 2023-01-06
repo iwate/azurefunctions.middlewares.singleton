@@ -60,7 +60,7 @@ public class Lock : IAsyncDisposable
             }
             else
             {
-                await Task.Delay(TimeSpan.FromSeconds(10), cancellationToken).ConfigureAwait(false);
+                await Task.Delay(TimeSpan.FromSeconds(1), cancellationToken).ConfigureAwait(false);
             }
         }
     }
