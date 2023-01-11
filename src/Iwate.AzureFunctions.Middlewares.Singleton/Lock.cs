@@ -1,4 +1,4 @@
-﻿using Azure.Storage.Blobs.Models;
+using Azure.Storage.Blobs.Models;
 using Azure.Storage.Blobs.Specialized;
 
 namespace Iwate.AzureFunctions.Middlewares.Singleton;
@@ -9,6 +9,7 @@ public class Lock : IAsyncDisposable
     private readonly BlobLeaseClient _blobLeaseClient;
     private CancellationTokenSource? _cancellationTokenSource = null;
     private Task? _task = null;
+    private bool _finished = false;
 
     public Lock(BlobLeaseClient blobLeaseClient)
     {
@@ -17,6 +18,10 @@ public class Lock : IAsyncDisposable
     }
     public async ValueTask StartAsync(CancellationToken cancellationToken)
     {
+        if (_finished) 
+        {
+            throw new InvalidOperationException("Already used! Lock object cannot reuse.");
+        }
         if (_task != null)
         {
             throw new InvalidOperationException("Already Locked!");
@@ -66,11 +71,18 @@ public class Lock : IAsyncDisposable
     }
     public async ValueTask FinishAsync(CancellationToken cancellationToken)
     {
+        if (!_finished) {
+            _finished = true;
+
         if (_task != null && _cancellationTokenSource != null)
         {
             _cancellationTokenSource.Cancel();
+                _cancellationTokenSource = null;
+                _task = null;
         }
+
         await _blobLeaseClient.ReleaseAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
+        }
     }
     public async ValueTask DisposeAsync()
     {
