@@ -1,4 +1,4 @@
-using Azure.Storage.Blobs.Models;
+﻿using Azure.Storage.Blobs.Models;
 using Azure.Storage.Blobs.Specialized;
 
 namespace Iwate.AzureFunctions.Middlewares.Singleton;
@@ -10,11 +10,15 @@ public class Lock : IAsyncDisposable
     private CancellationTokenSource? _cancellationTokenSource = null;
     private Task? _task = null;
     private bool _finished = false;
+    private readonly Random _random;
+    private int _retryCount;
+    private const int MAX_BACKOFF = 3000;
 
     public Lock(BlobLeaseClient blobLeaseClient)
     {
         _blobLeaseClient = blobLeaseClient;
-
+        _random = new Random();
+        _retryCount = 0;
     }
     public async ValueTask StartAsync(CancellationToken cancellationToken)
     {
@@ -65,7 +69,7 @@ public class Lock : IAsyncDisposable
             }
             else
             {
-                await Task.Delay(TimeSpan.FromSeconds(1), cancellationToken).ConfigureAwait(false);
+                await Task.Delay(Backoff(), cancellationToken).ConfigureAwait(false);
             }
         }
     }
@@ -74,18 +78,23 @@ public class Lock : IAsyncDisposable
         if (!_finished) {
             _finished = true;
 
-        if (_task != null && _cancellationTokenSource != null)
-        {
-            _cancellationTokenSource.Cancel();
+            if (_task != null && _cancellationTokenSource != null)
+            {
+                _cancellationTokenSource.Cancel();
                 _cancellationTokenSource = null;
                 _task = null;
-        }
+            }
 
-        await _blobLeaseClient.ReleaseAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
+            await _blobLeaseClient.ReleaseAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
         }
     }
     public async ValueTask DisposeAsync()
     {
         await FinishAsync(CancellationToken.None).ConfigureAwait(false);
+    }
+
+    private TimeSpan Backoff()
+    {
+        return TimeSpan.FromMilliseconds(Math.Min(Math.Pow(2, _retryCount++) + _random!.Next(100), MAX_BACKOFF));
     }
 }
