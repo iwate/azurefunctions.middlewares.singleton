@@ -38,7 +38,7 @@ public class Lock : IAsyncDisposable
                 if (ex.Status != 409)
                     throw;
             }
-            if (response != null && response.Value != null && !string.IsNullOrEmpty(response.Value.LeaseId))
+            if (!string.IsNullOrEmpty(response?.Value?.LeaseId))
             {
                 _cancellationTokenSource = new CancellationTokenSource();
                 var cts = CancellationTokenSource.CreateLinkedTokenSource(_cancellationTokenSource.Token, cancellationToken);
