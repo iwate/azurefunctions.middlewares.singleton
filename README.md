@@ -17,6 +17,9 @@ var host = new HostBuilder()
     .ConfigureFunctionsWorkerDefaults(app => {
         app.UseMiddleware<Iwate.AzureFunctions.Middlewares.Singleton.SingletonMiddleware>();
     })
+    .ConfigureServices((ctx, services) => {
+        services.AddSingleton<Iwate.AzureFunctions.Middlewares.Singleton.LockService>();
+    })
     .Build();
 host.Run();
 ```
